@@ -1,11 +1,8 @@
 --
-- name: PowerEdge Challenge
+- name: PowerEdge Challenge - virtual media info (mounted / unmounted)
   hosts: localhost
   connection: local
   gather_facts: False
-
-  collections:
-    - dellemc.openmanage
 
   vars:
     idrac_ip: 10.0.0.89            # the idrac to connect to
@@ -16,19 +13,30 @@
   tasks:
 
    # Start your first task here
-  - name: Get chassis thermals
-    ansible.builtin.redfish_info:
-      category: Chassis
-      command: GetChassisThermals
+   #  - name: Get chassis thermals
+   #ansible.builtin.redfish_info:
+   #category: Chassis
+   #  command: GetChassisThermals
+   #  baseuri: "{{ idrac_ip }}"
+   #  username: "{{ idrac_user }}"
+   #  password: "{{ idrac_password }}"
+   #register: result
+
+    #- name: Copy results to output file
+    #ansible.builtin.copy:
+    # content: "{{ result | to_nice_json }}"
+    # dest: "output.json"  # thermals are posted in a file named output.json
+
+ - name: Determine what virtual media (if any) has been attached
+    community.general.redfish_info:
       baseuri: "{{ idrac_ip }}"
       username: "{{ idrac_user }}"
-      password: "{{ idrac_password }}"
-    register: result
+      password: "{{ idrac_password}}"
+      category: Manager
+      command: GetVirtualMedia
+    register: results
 
-  - name: Copy results to output file
-    ansible.builtin.copy:
-      content: "{{ result | to_nice_json }}"
-      dest: "output.json"  # thermals are posted in a file named output.json
+
 
   # unsure how to get started?
   # Hints:
